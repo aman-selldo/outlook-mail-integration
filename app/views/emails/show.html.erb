@@ -1,0 +1,25 @@
+<h1>Email Details</h1>
+
+<% if @email.present? %>
+  <p><strong>From:</strong> <%= @email["from"]["emailAddress"]["name"] %> (<%= @email["from"]["emailAddress"]["address"] %>)</p>
+  <p><strong>Subject:</strong> <%= @email["subject"] %></p>
+  <% if @email["ccRecipients"].present? %>
+    <p><strong> CC: </strong></p>
+    <ul>
+      <% @email["ccRecipients"].each do |cc| %>
+        <li><%= cc["emailAddress"]["name"]%> (<%= cc["emailAddress"]["address"] %>)</li>
+      <% end %>
+    </ul>
+  <% else %>
+
+    <p><strong>CC: </strong>CC not found</p>
+  <% end %>
+
+  <p><strong>Received:</strong> <%= @email["receivedDateTime"] %></p>
+  <hr>
+  <h3>Email Body:</h3>
+  <p><%= raw @email["body"]["content"] %></p> 
+  <%= link_to 'Back', emails_path%>
+<% else %>
+  <p>Email not found.</p>
+<% end %>

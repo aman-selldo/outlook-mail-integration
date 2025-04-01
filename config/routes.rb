@@ -16,7 +16,7 @@ Rails.application.routes.draw do
   get "auth/microsoft_graph/callback", to: "sessions#microsoft_auth"
   get "auth/failure", to: redirect("/")
   delete "logout", to: "sessions#destroy"
-  resources :emails, only: [:index]
+  resources :emails, only: [:index, :show]
 
 
 end

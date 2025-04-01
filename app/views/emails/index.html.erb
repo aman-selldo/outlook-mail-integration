@@ -7,6 +7,7 @@
         <strong>From:</strong> <%= email["from"]["emailAddress"]["name"] %> (<%= email["from"]["emailAddress"]["address"] %>)<br>
         <strong>Subject:</strong> <%= email["subject"] %><br>
         <strong>Received:</strong> <%= email["receivedDateTime"] %><br>
+        <%= link_to 'View Email', email_path(email["id"]) %>
         <hr>
       </li>
     <% end %>
