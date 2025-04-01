@@ -1,0 +1,10 @@
+<h1>Welcome to OutlookTest</h1>
+
+<% if current_user %>
+  <p>welcome, <%= current_user.name %></p>
+  <%= image_tag current_user.image, width: 50 if current_user.image %>
+  <%= button_to "Logout", logout_path, method: :delete %>
+<% else %>
+  <%= link_to "Sign in with Microsoft", "/auth/microsoft_graph" %>
+<% end %>
+  

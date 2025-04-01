@@ -1,0 +1,16 @@
+<h1>Your Outlook Emails</h1>
+
+<% if @emails.present? %>
+  <ul>
+    <% @emails.each do |email| %>
+      <li>
+        <strong>From:</strong> <%= email["from"]["emailAddress"]["name"] %> (<%= email["from"]["emailAddress"]["address"] %>)<br>
+        <strong>Subject:</strong> <%= email["subject"] %><br>
+        <strong>Received:</strong> <%= email["receivedDateTime"] %><br>
+        <hr>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No emails found.</p>
+<% end %>
