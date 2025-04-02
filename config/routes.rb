@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   root "home#index"
   get "auth/microsoft_graph/callback", to: "sessions#microsoft_auth"
   get "auth/failure", to: redirect("/")
+  get "profile_image", to: "emails#profile_image"
   delete "logout", to: "sessions#destroy"
   resources :emails, only: [:index, :show]
 

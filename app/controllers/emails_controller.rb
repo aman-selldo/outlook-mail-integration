@@ -1,4 +1,8 @@
 class EmailsController < ApplicationController
+  require 'net/http'
+  require 'uri'
+  require 'json'
+
   before_action :authenticate_user!
 
   def index
@@ -14,12 +18,24 @@ class EmailsController < ApplicationController
     @email = fetch_email_details(email_id)
   end
 
+  def profile_image
+    uri = URI.parse("https://graph.microsoft.com/v1.0/me/photo/$value")
+    request = Net::HTTP::Get.new(uri)
+    request["Authorization"] = "Bearer #{current_user.token}"
+    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+      http.request(request)
+    end
+
+    if response.code == "200"
+      send_data response.body, type: response["content-type"], disposition: "inline"
+    else
+      redirect_to root_path, alert: "Could not fetch profile image."
+    end
+  end
+
   private
 
   def fetch_emails
-    require 'net/http'
-    require 'uri'
-    require 'json'
 
     uri = URI.parse("https://graph.microsoft.com/v1.0/me/mailfolders/inbox/messages")
     request = Net::HTTP::Get.new(uri)
@@ -33,14 +49,11 @@ class EmailsController < ApplicationController
     if response.code == "200"
       JSON.parse(response.body)["value"]
     else
-      []
+      nil
     end
   end
 
   def fetch_email_details(email_id)
-    require 'net/http'
-    require 'uri'
-    require 'json'
 
     uri = URI.parse("https://graph.microsoft.com/v1.0/me/messages/#{email_id}")
     request = Net::HTTP::Get.new(uri)
@@ -54,7 +67,7 @@ class EmailsController < ApplicationController
     if response.code == "200"
       JSON.parse(response.body)
     else
-      {}
+      nil
     end
   end
 

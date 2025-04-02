@@ -1,7 +1,8 @@
 class SessionsController < ApplicationController
+
   def microsoft_auth
     auth = request.env['omniauth.auth']
-  
+    
     user = User.find_or_initialize_by(microsoft_uid: auth.uid)
     
     user.name = auth.info.name
@@ -12,7 +13,6 @@ class SessionsController < ApplicationController
     user.save
     
     session[:user_id] = user.id
-    Rails.logger.info "Session set for user_id: #{session[:user_id]}" 
     redirect_to emails_path, notice: "Signed in successfully!"
   end
 
