@@ -2,9 +2,7 @@
 
 <% if current_user %>
   <p>welcome, <%= current_user.name %></p>
-  <%= image_tag current_user.image, width: 50 if current_user.image %>
-  <%= button_to "Logout", logout_path, method: :delete %>
+  <%= link_to "check email", emails_path %>
 <% else %>
   <%= link_to "Sign in with Microsoft", "/auth/microsoft_graph" %>
 <% end %>
-  

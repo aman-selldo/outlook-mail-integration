@@ -54,7 +54,6 @@ class EmailsController < ApplicationController
   end
 
   def fetch_email_details(email_id)
-
     uri = URI.parse("https://graph.microsoft.com/v1.0/me/messages/#{email_id}")
     request = Net::HTTP::Get.new(uri)
     request["Authorization"] = "Bearer #{current_user.token}"
