@@ -17,7 +17,11 @@ Rails.application.routes.draw do
   get "auth/failure", to: redirect("/")
   get "profile_image", to: "emails#profile_image"
   delete "logout", to: "sessions#destroy"
-  resources :emails, only: [:index, :show]
 
+  resources :emails, only: [:index, :show, :new] do
+    collection do
+      post :send_email, to: "emails#send_email"
+    end
+  end
 
 end

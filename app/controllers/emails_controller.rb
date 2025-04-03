@@ -1,7 +1,8 @@
+require 'net/http'
+require 'uri'
+require 'json'
+
 class EmailsController < ApplicationController
-  require 'net/http'
-  require 'uri'
-  require 'json'
 
   before_action :authenticate_user!
 
@@ -11,6 +12,67 @@ class EmailsController < ApplicationController
     else
       redirect_to root_path, alert: "Please sign in to view emails."
     end
+  end
+
+  def new
+    @email = {}
+  end
+
+  def send_email
+
+  recipient = params[:to]
+  subject = params[:subject]
+  body = params[:body]
+  cc = params[:cc]
+
+    if recipient.blank? || subject.blank? || body.blank?
+      redirect_to new_email_path, alert: "All fields are required."
+      return
+    end
+  
+    uri = URI.parse("https://graph.microsoft.com/v1.0/me/sendMail")
+    request = Net::HTTP::Post.new(uri)
+    request["Authorization"] = "Bearer #{current_user.token}"
+    request["Content-Type"] = "application/json"
+  
+    email_data = {
+      message: {
+        subject: subject,
+        body: {
+          contentType: "HTML",
+          content: body
+        },
+        toRecipients: [
+          {
+            emailAddress: {
+              address: recipient
+            }
+          }
+        ],
+        ccRecipients: [
+          {
+            emailAddress: {
+              address: cc
+            }
+          }
+        ]
+      }
+    }
+  
+    request.body = email_data.to_json
+  
+    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+      http.request(request)
+    end
+  
+    if response.code.to_i == 202 || response.code.to_i == 200
+      redirect_to emails_path, notice: "Email sent successfully!"
+    else
+      error_message = "Failed to send email. Code: #{response.code}, Message: #{response.body}"
+      Rails.logger.error error_message
+      redirect_to new_email_path, alert: error_message
+    end
+
   end
 
   def show
