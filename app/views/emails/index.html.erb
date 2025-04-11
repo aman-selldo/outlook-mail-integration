@@ -7,17 +7,17 @@
 <% if @emails.present? %>
   <ul>
     <% @emails.each do |email| %>
-      <li>
+      <li> 
         <strong>From:</strong> <%= email["from"]["emailAddress"]["name"] %> (<%= email["from"]["emailAddress"]["address"] %>)<br>
         <strong>Subject:</strong> <%= email["subject"] %><br>
         <strong>Received:</strong> <%= email["receivedDateTime"] %><br>
         <%= link_to 'View Email', email_path(email["id"]) %>
         <hr>
       </li>
+      <%= button_to "Create Webhook Subscription", create_subscription_emails_path, method: :post, class: "btn btn-primary" %>
+
     <% end %>
   </ul>
 <% else %>
   <p>No emails found.</p>
 <% end %>
-
-

@@ -18,6 +18,39 @@ class EmailsController < ApplicationController
     @email = {}
   end
 
+  def create_subscription
+    uri = URI.parse("https://graph.microsoft.com/v1.0/subscriptions")
+
+    request = Net::HTTP::Post.new(uri)
+    request["Authorization"] = "Bearer #{current_user.token}"
+    request["Content-Type"] = "application/json"
+
+    expiration_date = (Time.now.utc + 1.day).iso8601
+
+    body = {
+      "changeType" => "created,updated",
+      "notificationUrl" => "https://8ba3-219-91-158-194.ngrok-free.app/api/v1/notifications",
+      "resource" => "me/mailFolders('Inbox')/messages",
+      "expirationDateTime" => expiration_date,
+      "clientState" => "your_secret_client_state"
+    }
+
+    request.body = body.to_json
+
+    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+      http.request(request)
+    end
+
+    if response.code.to_i == 201
+      Rails.logger.info "Webhook Subscription created:"
+      redirect_to emails_path, notice: "Webhook subscription created successfully!"
+    else
+      error_message = "Failed to create subscription: #{response.code} - #{response.body}"
+      Rails.logger.error "#{error_message}"
+      redirect_to emails_path, alert: error_message
+    end
+  end
+
   def send_email
     recipient = params[:to]
     subject = params[:subject]

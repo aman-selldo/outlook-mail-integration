@@ -18,10 +18,18 @@ Rails.application.routes.draw do
   get "profile_image", to: "emails#profile_image"
   delete "logout", to: "sessions#destroy"
 
-  resources :emails, only: [:index, :show, :new] do
+  resources :emails do
     collection do
       post :send_email, to: "emails#send_email"
+      post :create_subscription
     end
   end
+
+  namespace :api do
+    namespace :v1 do
+      match 'notifications', to: 'notifications#receive', via: [:get, :post]
+    end
+  end
+  
 
 end
